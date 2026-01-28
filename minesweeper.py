@@ -4,6 +4,7 @@ grid_width = 30
 grid_height = 20
 grid_mines = 50
 
+# Printing the filled in grid to the terminal
 def print_full_grid():
     print()
     print("G" * (grid_width + 2))
@@ -19,6 +20,7 @@ def print_full_grid():
         print("G" + line + "G")
     print("G" * (grid_width + 2))
 
+# Printing the user's visible grid to the terminal
 def print_current_grid():
     print()
     print("G" * (grid_width + 2))
@@ -30,9 +32,30 @@ def print_current_grid():
             elif (current_grid[i][j] == 2):
                 line += "m"
             else:
-                line += str(current_grid[i][j])
+                if (full_grid[i][j] == 0):
+                    line += "-"
+                else:
+                    line += str(full_grid[i][j])
         print("G" + line + "G")
     print("G" * (grid_width + 2))
+
+def reveal_square(i, j):
+    if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
+        return 1
+    if (full_grid[i][j] == 9):
+        return 1
+    if (full_grid[i][j] == 0 and current_grid[i][j] == 0):
+        current_grid[i][j] = 1
+        reveal_square(i - 1, j)
+        reveal_square(i + 1, j)
+        reveal_square(i, j - 1)
+        reveal_square(i, j + 1)
+        reveal_square(i - 1, j - 1)
+        reveal_square(i - 1, j + 1)
+        reveal_square(i + 1, j - 1)
+        reveal_square(i + 1, j + 1)
+    current_grid[i][j] = 1
+    return 0
 
 '''
     Full grid:
@@ -93,3 +116,25 @@ while i < grid_mines:
 
 print_full_grid()
 print_current_grid()
+
+while (grid_mines > 0):
+    input_string = input()
+    input_arr = input_string.split()
+
+    if (len(input_arr) != 2 or not input_arr[0].isnumeric() or not input_arr[1].isnumeric()):
+        print("Input not accepted, please input two coordinates, separated by space")
+        continue
+
+    i = int(input_arr[0])
+    j = int(input_arr[1])
+    if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
+        print("Coordinate is outside of the grid, please enter a new one")
+        continue
+
+    if (reveal_square(i, j) == 1):
+        print_full_grid()
+        print()
+        print("This square had a mine, you lost :(")
+        break
+
+    print_current_grid()
