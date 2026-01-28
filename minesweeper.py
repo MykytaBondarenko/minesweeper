@@ -4,7 +4,7 @@ grid_width = 30
 grid_height = 20
 grid_mines = 50
 
-# Printing the filled in grid to the terminal
+# Printing the filled in grid to the terminal (exists for debugging)
 def print_full_grid():
     print()
     print("G" * (grid_width + 2))
@@ -23,6 +23,7 @@ def print_full_grid():
 # Printing the user's visible grid to the terminal
 def print_current_grid():
     global grid_mines
+    space_left = False
     print()
     print("Mines left: " + str(grid_mines))
     print("G" * (grid_width + 2))
@@ -31,6 +32,7 @@ def print_current_grid():
         for j in range(grid_width):
             if (current_grid[i][j] == 0):
                 line += " "
+                space_left = True
             elif (current_grid[i][j] == 1):
                 if (full_grid[i][j] == 0):
                     line += "-"
@@ -42,6 +44,7 @@ def print_current_grid():
                 line += "?"
         print("G" + line + "G")
     print("G" * (grid_width + 2))
+    return space_left
 
 def try_square(i, j):
     if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
@@ -79,7 +82,12 @@ def mine_square(i, j):
     global grid_mines
     if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
         return 2
-    if (current_grid[i][j] == 0):
+    if (current_grid[i][j] == 2):
+        current_grid[i][j] = 0
+        grid_mines += 1
+    elif (grid_mines <= 0):
+        print("No mines left")
+    elif (current_grid[i][j] == 0):
         current_grid[i][j] = 2
         grid_mines -= 1
     return 0
@@ -141,10 +149,7 @@ while i < grid_mines:
     
     i += 1
 
-print_full_grid()
-print_current_grid()
-
-while (grid_mines > 0):
+while (print_current_grid()):
     input_string = input()
     input_arr = input_string.split()
 
@@ -178,5 +183,5 @@ while (grid_mines > 0):
         print()
         print("This square had a mine, you lost :(")
         break
-
-    print_current_grid()
+else:
+    print("Good job, you won! :)")
