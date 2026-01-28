@@ -4,21 +4,29 @@ grid_width = 30
 grid_height = 20
 grid_mines = 50
 
+# Colors
+DARK_GREY = "\x1b[38;2;96;96;96m"
+GREY = "\x1b[38;2;128;128;128m"
+RED = "\x1b[38;2;255;0;0m"
+LIGHT_RED = "\x1b[38;2;255;153;153m"
+YELLOW = "\x1b[38;2;255;255;0m"
+WHITE = "\x1b[0m"
+
 # Printing the filled in grid to the terminal (exists for debugging)
 def print_full_grid():
     print()
-    print("G" * (grid_width + 2))
+    print(DARK_GREY + "G" * (grid_width + 2))
     for i in range(grid_height):
         line = ""
         for j in range(grid_width):
             if (full_grid[i][j] == 0):
-                line += "-"
+                line += GREY + "-"
             elif (full_grid[i][j] == 9):
-                line += "m"
+                line += RED + "m"
             else:
-                line += str(full_grid[i][j])
-        print("G" + line + "G")
-    print("G" * (grid_width + 2))
+                line += WHITE + str(full_grid[i][j])
+        print(DARK_GREY + "G" + line + DARK_GREY + "G")
+    print(DARK_GREY + "G" * (grid_width + 2) + WHITE)
 
 # Printing the user's visible grid to the terminal
 def print_current_grid():
@@ -26,7 +34,7 @@ def print_current_grid():
     space_left = False
     print()
     print("Mines left: " + str(grid_mines))
-    print("G" * (grid_width + 2))
+    print(DARK_GREY + "G" * (grid_width + 2))
     for i in range(grid_height):
         line = ""
         for j in range(grid_width):
@@ -35,15 +43,15 @@ def print_current_grid():
                 space_left = True
             elif (current_grid[i][j] == 1):
                 if (full_grid[i][j] == 0):
-                    line += "-"
+                    line += GREY + "-"
                 else:
-                    line += str(full_grid[i][j])
+                    line += WHITE + str(full_grid[i][j])
             elif (current_grid[i][j] == 2):
-                line += "m"
+                line += LIGHT_RED + "m"
             else:
-                line += "?"
-        print("G" + line + "G")
-    print("G" * (grid_width + 2))
+                line += YELLOW + "?"
+        print(DARK_GREY + "G" + line + DARK_GREY + "G")
+    print(DARK_GREY + "G" * (grid_width + 2) + WHITE)
     return space_left
 
 def try_square(i, j):

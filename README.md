@@ -32,3 +32,7 @@ The game will continue until there are no squares left take action with.
 
 - GUI !!!
 - Revealing the neighboring squares of a revealed square if there are enough mines placed around it
+
+### Personalisation
+
+- If you'd like to set your own size of the minefield and number of mines, change *grid_width*, *grid_height* and *grid_mines* variables
