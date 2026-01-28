@@ -22,26 +22,44 @@ def print_full_grid():
 
 # Printing the user's visible grid to the terminal
 def print_current_grid():
+    global grid_mines
     print()
+    print("Mines left: " + str(grid_mines))
     print("G" * (grid_width + 2))
     for i in range(grid_height):
         line = ""
         for j in range(grid_width):
             if (current_grid[i][j] == 0):
                 line += " "
-            elif (current_grid[i][j] == 2):
-                line += "m"
-            else:
+            elif (current_grid[i][j] == 1):
                 if (full_grid[i][j] == 0):
                     line += "-"
                 else:
                     line += str(full_grid[i][j])
+            elif (current_grid[i][j] == 2):
+                line += "m"
+            else:
+                line += "?"
         print("G" + line + "G")
     print("G" * (grid_width + 2))
 
+def try_square(i, j):
+    if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
+        return 2
+    current_grid[i][j] += 3
+    print_current_grid()
+    current_grid[i][j] -= 3
+    print("Would you like to Reveal or put a Mine on this square? (r/m/n)")
+    input_string = input()
+    if (input_string == "r"):
+        return 0
+    if (input_string == "m"):
+        return 3
+    return 1
+    
 def reveal_square(i, j):
     if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
-        return 1
+        return 2
     if (full_grid[i][j] == 9):
         return 1
     if (full_grid[i][j] == 0 and current_grid[i][j] == 0):
@@ -55,6 +73,15 @@ def reveal_square(i, j):
         reveal_square(i + 1, j - 1)
         reveal_square(i + 1, j + 1)
     current_grid[i][j] = 1
+    return 0
+
+def mine_square(i, j):
+    global grid_mines
+    if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
+        return 2
+    if (current_grid[i][j] == 0):
+        current_grid[i][j] = 2
+        grid_mines -= 1
     return 0
 
 '''
@@ -127,11 +154,26 @@ while (grid_mines > 0):
 
     i = int(input_arr[0])
     j = int(input_arr[1])
-    if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
+    try_result = try_square(i, j)
+
+    if (try_result == 2):
+        print("Coordinate is outside of the grid, please enter a new one")
+        continue
+    if (try_result == 1):
+        print("Enter a new coordinate")
+        continue
+
+    action_result = 0
+    if (try_result == 3):
+        action_result = mine_square(i, j)
+    if (try_result == 0):
+        action_result = reveal_square(i, j)
+
+    if (action_result == 2):
         print("Coordinate is outside of the grid, please enter a new one")
         continue
 
-    if (reveal_square(i, j) == 1):
+    if (action_result == 1):
         print_full_grid()
         print()
         print("This square had a mine, you lost :(")
