@@ -25,13 +25,13 @@ The game will continue until there are no squares left take action with.
  - Place/remove mines
  - Safe checks for coordinate values
  - Auto reveal neighboring squares if the current one has no mines near it
+ - Reveal neighboring squares if there are enough mines marked around current square
  - Limit number of mines placed
  - Print filled in grid for debugging purposes
 
 ### Future updates:
 
 - GUI !!!
-- Revealing the neighboring squares of a revealed square if there are enough mines placed around it
 
 ### Personalisation
 

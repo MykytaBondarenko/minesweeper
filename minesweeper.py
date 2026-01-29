@@ -54,6 +54,34 @@ def print_current_grid():
     print(DARK_GREY + "G" * (grid_width + 2) + WHITE)
     return space_left
 
+def count_marked_mines(i, j):
+    count = 0
+    if (i > 0): # north
+        if (current_grid[i - 1][j] == 2):
+            count += 1
+    if (i < grid_height - 1): # south
+        if (current_grid[i + 1][j] == 2):
+            count += 1
+    if (j > 0): # west
+        if (current_grid[i][j - 1] == 2):
+            count += 1
+    if (j < grid_width - 1): # east
+        if (current_grid[i][j + 1] == 2):
+            count += 1
+    if (i > 0 and j > 0): # north-west
+        if (current_grid[i - 1][j - 1] == 2):
+            count += 1
+    if (i > 0 and j < grid_width - 1): # north-east
+        if (current_grid[i - 1][j + 1] == 2):
+            count += 1
+    if (i < grid_height - 1 and j > 0): # south-west
+        if (current_grid[i + 1][j - 1] == 2):
+            count += 1
+    if (i < grid_height - 1 and j < grid_width - 1): # south-east
+        if (current_grid[i + 1][j + 1] == 2):
+            count += 1
+    return count
+
 def try_square(i, j):
     if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
         return 2
@@ -67,23 +95,41 @@ def try_square(i, j):
     if (input_string == "m"):
         return 3
     return 1
+
+def reveal_neighbouring_squares(i, j):
+    reveal_square_rec(i - 1, j)
+    reveal_square_rec(i + 1, j)
+    reveal_square_rec(i, j - 1)
+    reveal_square_rec(i, j + 1)
+    reveal_square_rec(i - 1, j - 1)
+    reveal_square_rec(i - 1, j + 1)
+    reveal_square_rec(i + 1, j - 1)
+    reveal_square_rec(i + 1, j + 1)
+
+# Recursive reveal square method so it doesn't infinitely iterate
+def reveal_square_rec(i, j):
+    if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
+        return 2
+    if (full_grid[i][j] == 9 and current_grid[i][j] != 2):
+        return 1
+    if (current_grid[i][j] == 0):
+        current_grid[i][j] = 1
+        if (full_grid[i][j] == 0):
+            reveal_neighbouring_squares(i, j)
+    return 0
     
 def reveal_square(i, j):
     if (i < 0 or i >= grid_height or j < 0 or j >= grid_width):
         return 2
-    if (full_grid[i][j] == 9):
+    if (full_grid[i][j] == 9 and current_grid[i][j] != 2):
         return 1
-    if (full_grid[i][j] == 0 and current_grid[i][j] == 0):
+    if (current_grid[i][j] == 0):
         current_grid[i][j] = 1
-        reveal_square(i - 1, j)
-        reveal_square(i + 1, j)
-        reveal_square(i, j - 1)
-        reveal_square(i, j + 1)
-        reveal_square(i - 1, j - 1)
-        reveal_square(i - 1, j + 1)
-        reveal_square(i + 1, j - 1)
-        reveal_square(i + 1, j + 1)
-    current_grid[i][j] = 1
+        if (full_grid[i][j] == 0):
+            reveal_neighbouring_squares(i, j)
+    elif (current_grid[i][j] == 1):
+        if (count_marked_mines(i, j) >= full_grid[i][j]):
+            reveal_neighbouring_squares(i, j)
     return 0
 
 def mine_square(i, j):
